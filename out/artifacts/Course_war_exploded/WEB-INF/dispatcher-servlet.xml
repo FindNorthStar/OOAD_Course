@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/jdbc
+       http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!-- 启动自动扫描该包下所有的Bean(例如@Controller) -->
+    <context:component-scan base-package="sse.bupt"/>
+
+    <!-- 定义视图解析器 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/pages/"/>
+        <property name="suffix" value=".jsp"/>
+        <property name="order" value="0"/>
+    </bean>
+
+    <!-- 数据库映射 -->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/course"/>
+        <property name="username" value="root"/>
+        <property name="password" value="root"/>
+    </bean>
+
+    <!-- Hibernate4 -->
+    <!-- 加载资源文件  其中包含变量信息，必须在Spring配置文件的最前面加载，即第一个加载-->
+    <!-- 可以加多个包 -->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="packagesToScan" value="sse.bupt.domain"/>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- 配置Hibernate事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <bean id="classroomDao" class="sse.bupt.dao.ClassroomDaoImpl"/>
+    <bean id="lessonDao" class="sse.bupt.dao.LessonDaoImpl"/>
+    <bean id="studentDao" class="sse.bupt.dao.StudentDaoImpl"/>
+    <bean id="teacherDao" class="sse.bupt.dao.TeacherDaoImpl"/>
+    <bean id="userDao" class="sse.bupt.dao.UserDaoImpl"/>
+
+    <bean id="classroomService" class="sse.bupt.service.ClassroomServiceImpl"/>
+    <bean id="lessonService" class="sse.bupt.service.LessonServiceImpl"/>
+    <bean id="studentService" class="sse.bupt.service.StudentServiceImpl"/>
+    <bean id="teacherService" class="sse.bupt.service.TeacherServiceImpl"/>
+    <bean id="userService" class="sse.bupt.service.UserServiceImpl"/>
+
+</beans>
